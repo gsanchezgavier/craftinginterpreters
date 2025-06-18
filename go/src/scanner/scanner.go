@@ -9,7 +9,7 @@ import (
 const (
 	quotesSize = 1
 	//TODO nil rune?
-	end = 0
+	end = -1
 )
 
 type Scanner struct {
