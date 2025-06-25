@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"strconv"
 	"unicode/utf8"
+
+	"github.com/gsanchezgavier/craftinginterpreters/src/token"
 )
 
 const (
@@ -17,7 +19,7 @@ type Scanner struct {
 	start   int
 	current int
 	line    int
-	tokens  []Token
+	tokens  []token.Token
 }
 
 func NewScanner(source string) Scanner {
@@ -27,13 +29,13 @@ func NewScanner(source string) Scanner {
 	}
 }
 
-func (s *Scanner) ScanTokens() []Token {
+func (s *Scanner) ScanTokens() []token.Token {
 	for !s.isAtEnd() {
 		s.start = s.current
 		s.scanToken()
 	}
 
-	s.tokens = append(s.tokens, NewToken(EOF, "", s.line))
+	s.tokens = append(s.tokens, token.NewToken(token.EOF, "", s.line))
 
 	return s.tokens
 }
@@ -79,13 +81,13 @@ func (s *Scanner) advanceIfMatch(value rune) bool {
 	s.current += size
 	return true
 }
-func (s *Scanner) addToken(t TokenType) {
+func (s *Scanner) addToken(t token.TokenType) {
 	lexeme := string(s.source[s.start:s.current])
-	s.tokens = append(s.tokens, NewToken(t, lexeme, s.line))
+	s.tokens = append(s.tokens, token.NewToken(t, lexeme, s.line))
 }
-func (s *Scanner) addLiteralToken(t TokenType, literal any) {
+func (s *Scanner) addLiteralToken(t token.TokenType, literal any) {
 	lexeme := string(s.source[s.start:s.current])
-	s.tokens = append(s.tokens, NewLiteralToken(t, lexeme, s.line, literal))
+	s.tokens = append(s.tokens, token.NewLiteralToken(t, lexeme, s.line, literal))
 }
 
 func (s *Scanner) identifier() {
@@ -93,10 +95,10 @@ func (s *Scanner) identifier() {
 		s.advance()
 	}
 	text := s.source[s.start:s.current]
-	if tokenType, ok := Keywords[text]; ok {
+	if tokenType, ok := token.Keywords[text]; ok {
 		s.addToken(tokenType)
 	} else {
-		s.addToken(IDENTIFIER)
+		s.addToken(token.IDENTIFIER)
 	}
 
 }
@@ -118,7 +120,7 @@ func (s *Scanner) number() {
 		}
 	}
 	val, _ := strconv.ParseFloat(s.source[s.start:s.current], 64)
-	s.addLiteralToken(NUMBER, val)
+	s.addLiteralToken(token.NUMBER, val)
 }
 func (s *Scanner) string() {
 	for {
@@ -149,56 +151,56 @@ func (s *Scanner) string() {
 	// s.advance()
 
 	value := s.source[s.start+quotesSize : s.current-quotesSize]
-	s.addLiteralToken(STRING, value)
+	s.addLiteralToken(token.STRING, value)
 }
 func (s *Scanner) scanToken() {
 	r := s.advance()
 	switch r {
 	// single char token
 	case '(':
-		s.addToken(LEFT_PAREN)
+		s.addToken(token.LEFT_PAREN)
 	case ')':
-		s.addToken(RIGHT_PAREN)
+		s.addToken(token.RIGHT_PAREN)
 	case '{':
-		s.addToken(LEFT_BRACE)
+		s.addToken(token.LEFT_BRACE)
 	case '}':
-		s.addToken(RIGHT_BRACE)
+		s.addToken(token.RIGHT_BRACE)
 	case ',':
-		s.addToken(COMMA)
+		s.addToken(token.COMMA)
 	case '.':
-		s.addToken(DOT)
+		s.addToken(token.DOT)
 	case '-':
-		s.addToken(MINUS)
+		s.addToken(token.MINUS)
 	case '+':
-		s.addToken(PLUS)
+		s.addToken(token.PLUS)
 	case ';':
-		s.addToken(SEMICOLON)
+		s.addToken(token.SEMICOLON)
 	case '*':
-		s.addToken(STAR)
+		s.addToken(token.STAR)
 	// double chart tokens
 	case '!':
 		if s.advanceIfMatch('=') {
-			s.addToken(BANG_EQUAL)
+			s.addToken(token.BANG_EQUAL)
 		} else {
-			s.addToken(BANG)
+			s.addToken(token.BANG)
 		}
 	case '=':
 		if s.advanceIfMatch('=') {
-			s.addToken(EQUAL_EQUAL)
+			s.addToken(token.EQUAL_EQUAL)
 		} else {
-			s.addToken(EQUAL)
+			s.addToken(token.EQUAL)
 		}
 	case '<':
 		if s.advanceIfMatch('=') {
-			s.addToken(LESS_EQUAL)
+			s.addToken(token.LESS_EQUAL)
 		} else {
-			s.addToken(LESS)
+			s.addToken(token.LESS)
 		}
 	case '>':
 		if s.advanceIfMatch('=') {
-			s.addToken(GREATER_EQUAL)
+			s.addToken(token.GREATER_EQUAL)
 		} else {
-			s.addToken(GREATER)
+			s.addToken(token.GREATER)
 		}
 	// comments
 	case '/':
@@ -228,7 +230,7 @@ func (s *Scanner) scanToken() {
 				s.advance()
 			}
 		default:
-			s.addToken(SLASH)
+			s.addToken(token.SLASH)
 		}
 	// white spaces
 	case ' ', '\r', '\t':
@@ -246,7 +248,7 @@ func (s *Scanner) scanToken() {
 		case isAlpha(r):
 			s.identifier()
 		default:
-			// TODO loggin
+			// TODO log
 			fmt.Printf("Unexpected character: %d", s.line)
 		}
 	}
