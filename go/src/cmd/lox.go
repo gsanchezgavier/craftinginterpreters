@@ -6,6 +6,8 @@ import (
 	"log"
 	"os"
 
+	"github.com/gsanchezgavier/craftinginterpreters/src/expr"
+	"github.com/gsanchezgavier/craftinginterpreters/src/parser"
 	"github.com/gsanchezgavier/craftinginterpreters/src/scanner"
 )
 
@@ -48,11 +50,23 @@ func runFile(path string) {
 }
 
 func run(source string) {
-	s := scanner.NewScanner(source)
+	s := scanner.New(source)
 
 	tokens := s.ScanTokens()
 
-	for _, t := range tokens {
-		fmt.Printf("%v\n", t)
-	}
+	p := parser.New(tokens)
+
+	expression := p.Parse()
+
+	printer := expr.Printer{}
+
+	printer.Print(expression)
 }
+
+//  Parser parser = new Parser(tokens);
+//     Expr expression = parser.parse();
+
+//     // Stop if there was a syntax error.
+//     if (hadError) return;
+
+//     System.out.println(new AstPrinter().print(expression));

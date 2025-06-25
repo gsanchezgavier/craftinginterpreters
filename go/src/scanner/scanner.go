@@ -22,7 +22,7 @@ type Scanner struct {
 	tokens  []token.Token
 }
 
-func NewScanner(source string) Scanner {
+func New(source string) Scanner {
 	return Scanner{
 		source: source,
 		line:   1,
@@ -35,7 +35,7 @@ func (s *Scanner) ScanTokens() []token.Token {
 		s.scanToken()
 	}
 
-	s.tokens = append(s.tokens, token.NewToken(token.EOF, "", s.line))
+	s.tokens = append(s.tokens, token.New(token.EOF, "", s.line))
 
 	return s.tokens
 }
@@ -83,7 +83,7 @@ func (s *Scanner) advanceIfMatch(value rune) bool {
 }
 func (s *Scanner) addToken(t token.TokenType) {
 	lexeme := string(s.source[s.start:s.current])
-	s.tokens = append(s.tokens, token.NewToken(t, lexeme, s.line))
+	s.tokens = append(s.tokens, token.New(t, lexeme, s.line))
 }
 func (s *Scanner) addLiteralToken(t token.TokenType, literal any) {
 	lexeme := string(s.source[s.start:s.current])

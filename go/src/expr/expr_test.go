@@ -1,38 +1,34 @@
 package expr
 
-// type Printer struct{}
+import (
+	"github.com/gsanchezgavier/craftinginterpreters/src/token"
+)
 
-// func (p Printer) print(expr Expr[T]) {
-// 	expr.Accept(p)
-// }
-
-// func (p Printer) VisitBinary(b Binary) {
-// 	p.parenthesize(b.operator.lexeme, b.left, b.right)
-// }
-// func (p Printer) VisitGrouping(g Grouping) {}
-// func (p Printer) VisitLiteral(l Literal) {
-// 	if l.value != nil {
-// 		fmt.Printf("%v", l.value)
-// 	}
-// }
-// func (p Printer) VisitUnary(u Unary) {}
-
-// func (p Printer) parenthesize(name string, expr ...Expr) {
-// 	fmt.Print("(")
-// 	fmt.Print(name)
-// 	for _, expr := range expr {
-// 		fmt.Print(" ")
-// 		expr.Accept(p)
-// 	}
-// 	fmt.Print(")")
-// }
-
-// func Test_print(t *testing.T) {
-// 	p := Printer{}
-// 	p.print(Binary{
-// 		left:     Literal{value: 1},
-// 		operator: NewToken(PLUS, "+", 1),
-// 		right:    Literal{value: 2},
-// 	})
-// 	t.FailNow()
-// }
+func Example_plus() {
+	p := Printer{}
+	p.Print(Binary{
+		left:     Literal{value: 1},
+		operator: token.New(token.PLUS, "+", 1),
+		right:    Literal{value: 2},
+	})
+	// Output: (+ 1 2)
+}
+func Example_unary() {
+	p := Printer{}
+	p.Print(Unary{
+		operator: token.New(token.MINUS, "-", 1),
+		right:    Literal{value: 1},
+	})
+	// Output: (- 1)
+}
+func Example_grouping() {
+	p := Printer{}
+	p.Print(Grouping{
+		expression: Binary{
+			left:     Literal{value: 1},
+			operator: token.New(token.PLUS, "+", 1),
+			right:    Literal{value: 2},
+		},
+	})
+	// Output: (group (+ 1 2))
+}

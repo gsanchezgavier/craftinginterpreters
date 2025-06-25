@@ -69,24 +69,24 @@ var Keywords = map[string]TokenType{
 }
 
 type Token struct {
-	tokenType TokenType
-	lexeme    string
-	literal   any
-	line      int
+	TokenType TokenType
+	Lexeme    string
+	Literal   any
+	Line      int
 }
 
-func NewToken(tokenType TokenType, lexeme string, line int) Token {
+func New(tokenType TokenType, lexeme string, line int) Token {
 	return Token{
-		tokenType: tokenType,
-		lexeme:    lexeme,
-		line:      line,
+		TokenType: tokenType,
+		Lexeme:    lexeme,
+		Line:      line,
 	}
 }
 func NewLiteralToken(tokenType TokenType, lexeme string, line int, literal any) Token {
 	return Token{
-		tokenType: tokenType,
-		lexeme:    lexeme,
-		literal:   literal,
-		line:      line,
+		TokenType: tokenType,
+		Lexeme:    lexeme,
+		Literal:   literal,
+		Line:      line,
 	}
 }
