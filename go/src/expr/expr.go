@@ -2,6 +2,7 @@ package expr
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/gsanchezgavier/craftinginterpreters/src/token"
 )
@@ -19,14 +20,14 @@ import (
 //                | "+"  | "-"  | "*" | "/" ;
 
 type Expr interface {
-	Accept(v Visitor)
+	Accept(v Visitor) any
 }
 
 type Visitor interface {
-	VisitBinary(b Binary)
-	VisitGrouping(g Grouping)
-	VisitLiteral(l Literal)
-	VisitUnary(u Unary)
+	VisitBinary(b Binary) any
+	VisitGrouping(g Grouping) any
+	VisitLiteral(l Literal) any
+	VisitUnary(u Unary) any
 }
 
 type Binary struct {
@@ -43,8 +44,8 @@ func NewBinary(left Expr, operator token.Token, right Expr) Binary {
 	}
 }
 
-func (b Binary) Accept(v Visitor) {
-	v.VisitBinary(b)
+func (b Binary) Accept(v Visitor) any {
+	return v.VisitBinary(b)
 }
 
 type Literal struct {
@@ -57,8 +58,8 @@ func NewLiteral(value any) Literal {
 	}
 }
 
-func (l Literal) Accept(v Visitor) {
-	v.VisitLiteral(l)
+func (l Literal) Accept(v Visitor) any {
+	return v.VisitLiteral(l)
 }
 
 type Grouping struct {
@@ -70,8 +71,8 @@ func NewGrouping(expression Expr) Grouping {
 		expression: expression,
 	}
 }
-func (g Grouping) Accept(v Visitor) {
-	v.VisitGrouping(g)
+func (g Grouping) Accept(v Visitor) any {
+	return v.VisitGrouping(g)
 }
 
 type Unary struct {
@@ -85,8 +86,8 @@ func NewUnary(operator token.Token, right Expr) Unary {
 		right:    right,
 	}
 }
-func (u Unary) Accept(v Visitor) {
-	v.VisitUnary(u)
+func (u Unary) Accept(v Visitor) any {
+	return v.VisitUnary(u)
 }
 
 // Generic version
@@ -138,33 +139,35 @@ func (u Unary) Accept(v Visitor) {
 
 type Printer struct{}
 
-func (p Printer) Print(expr Expr) {
-	expr.Accept(p)
+func (p Printer) Print(expr Expr) any {
+	return expr.Accept(p)
 }
 
-func (p Printer) VisitBinary(b Binary) {
-	p.parenthesize(b.operator.Lexeme, b.left, b.right)
+func (p Printer) VisitBinary(b Binary) any {
+	return p.parenthesize(b.operator.Lexeme, b.left, b.right)
 }
-func (p Printer) VisitGrouping(g Grouping) {
-	p.parenthesize("group", g.expression)
+func (p Printer) VisitGrouping(g Grouping) any {
+	return p.parenthesize("group", g.expression)
 }
-func (p Printer) VisitLiteral(l Literal) {
+func (p Printer) VisitLiteral(l Literal) any {
 	if l.value != nil {
-		fmt.Printf("%v", l.value)
+		return fmt.Sprintf("%v", l.value)
 	} else {
-		fmt.Print("nil")
+		return "nil"
 	}
 }
-func (p Printer) VisitUnary(u Unary) {
-	p.parenthesize(u.operator.Lexeme, u.right)
+func (p Printer) VisitUnary(u Unary) any {
+	return p.parenthesize(u.operator.Lexeme, u.right)
 }
 
-func (p Printer) parenthesize(name string, expr ...Expr) {
-	fmt.Print("(")
-	fmt.Print(name)
+func (p Printer) parenthesize(name string, expr ...Expr) any {
+	var buf strings.Builder
+	buf.WriteString("(")
+	buf.WriteString(name)
 	for _, expr := range expr {
-		fmt.Print(" ")
-		expr.Accept(p)
+		buf.WriteString(" ")
+		buf.WriteString(expr.Accept(p).(string))
 	}
-	fmt.Print(")")
+	buf.WriteString(")")
+	return buf.String()
 }

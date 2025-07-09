@@ -60,7 +60,9 @@ func run(source string) {
 
 	printer := expr.Printer{}
 
-	printer.Print(expression)
+	str := printer.Print(expression)
+
+	fmt.Print(str)
 }
 
 //  Parser parser = new Parser(tokens);

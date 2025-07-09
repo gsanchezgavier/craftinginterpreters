@@ -18,14 +18,6 @@ func New(tokens []t.Token) Parser {
 	}
 }
 
-// Expr parse() {
-//   try {
-//     return expression();
-//   } catch (ParseError error) {
-//     return null;
-//   }
-// }
-
 func (p *Parser) Parse() expr.Expr {
 	return p.expression()
 }
