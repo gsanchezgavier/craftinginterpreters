@@ -31,16 +31,16 @@ type Visitor interface {
 }
 
 type Binary struct {
-	left     Expr
-	operator token.Token
-	right    Expr
+	Left     Expr
+	Operator token.Token
+	Right    Expr
 }
 
 func NewBinary(left Expr, operator token.Token, right Expr) Binary {
 	return Binary{
-		left:     left,
-		operator: operator,
-		right:    right,
+		Left:     left,
+		Operator: operator,
+		Right:    right,
 	}
 }
 
@@ -49,12 +49,12 @@ func (b Binary) Accept(v Visitor) any {
 }
 
 type Literal struct {
-	value any
+	Value any
 }
 
 func NewLiteral(value any) Literal {
 	return Literal{
-		value: value,
+		Value: value,
 	}
 }
 
@@ -76,14 +76,14 @@ func (g Grouping) Accept(v Visitor) any {
 }
 
 type Unary struct {
-	operator token.Token
-	right    Expr
+	Operator token.Token
+	Right    Expr
 }
 
 func NewUnary(operator token.Token, right Expr) Unary {
 	return Unary{
-		operator: operator,
-		right:    right,
+		Operator: operator,
+		Right:    right,
 	}
 }
 func (u Unary) Accept(v Visitor) any {
@@ -144,20 +144,20 @@ func (p Printer) Print(expr Expr) any {
 }
 
 func (p Printer) VisitBinary(b Binary) any {
-	return p.parenthesize(b.operator.Lexeme, b.left, b.right)
+	return p.parenthesize(b.Operator.Lexeme, b.Left, b.Right)
 }
 func (p Printer) VisitGrouping(g Grouping) any {
 	return p.parenthesize("group", g.expression)
 }
 func (p Printer) VisitLiteral(l Literal) any {
-	if l.value != nil {
-		return fmt.Sprintf("%v", l.value)
+	if l.Value != nil {
+		return fmt.Sprintf("%v", l.Value)
 	} else {
 		return "nil"
 	}
 }
 func (p Printer) VisitUnary(u Unary) any {
-	return p.parenthesize(u.operator.Lexeme, u.right)
+	return p.parenthesize(u.Operator.Lexeme, u.Right)
 }
 
 func (p Printer) parenthesize(name string, expr ...Expr) any {

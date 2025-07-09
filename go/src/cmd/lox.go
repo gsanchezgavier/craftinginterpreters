@@ -6,7 +6,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/gsanchezgavier/craftinginterpreters/src/expr"
+	"github.com/gsanchezgavier/craftinginterpreters/src/interpreter"
 	"github.com/gsanchezgavier/craftinginterpreters/src/parser"
 	"github.com/gsanchezgavier/craftinginterpreters/src/scanner"
 )
@@ -58,11 +58,15 @@ func run(source string) {
 
 	expression := p.Parse()
 
-	printer := expr.Printer{}
+	i := interpreter.Interpreter{}
 
-	str := printer.Print(expression)
+	i.Interpret(expression)
 
-	fmt.Print(str)
+	// printer := expr.Printer{}
+
+	// str := printer.Print(expression)
+
+	// fmt.Print(str)
 }
 
 //  Parser parser = new Parser(tokens);
